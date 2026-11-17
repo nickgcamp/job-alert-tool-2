@@ -1,0 +1,7 @@
+{"jobs": [
+  {"id": 4012345, "internal_job_id": 1, "title": "Senior Financial Analyst, FP&A", "updated_at": "2026-11-17T15:00:00-05:00",
+   "requisition_id": "R1", "location": {"name": "Minneapolis, MN"}, "absolute_url": "https://boards.greenhouse.io/examplecorp/jobs/4012345",
+   "language": "en", "metadata": [], "content": "&lt;p&gt;Own the monthly forecast &amp;amp; budget.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;SQL&lt;/li&gt;&lt;/ul&gt;"},
+  {"id": 4012346, "title": "Software Engineer", "updated_at": "2026-11-17T15:00:00Z", "location": {"name": "Remote - US"},
+   "absolute_url": "https://boards.greenhouse.io/examplecorp/jobs/4012346"}
+]}

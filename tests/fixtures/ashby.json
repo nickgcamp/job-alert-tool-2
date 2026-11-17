@@ -1,0 +1,7 @@
+{"apiVersion": "1", "jobs": [
+  {"title": "Strategic Finance Analyst", "location": "St. Paul, MN", "secondaryLocations": [{"location": "Remote (US)"}],
+   "department": "Finance", "team": "FP&A", "isRemote": false, "workplaceType": "Hybrid", "descriptionPlain": "Forecasting and board reporting.",
+   "publishedAt": "2026-11-17T18:30:00.000+00:00", "employmentType": "FullTime",
+   "jobUrl": "https://jobs.ashbyhq.com/examplefintech/1111-2222", "applyUrl": "https://jobs.ashbyhq.com/examplefintech/1111-2222/application", "isListed": true},
+  {"title": "Hidden Role", "location": "Minneapolis, MN", "isListed": false, "jobUrl": "https://jobs.ashbyhq.com/examplefintech/3333"}
+]}

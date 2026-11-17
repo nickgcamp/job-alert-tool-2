@@ -1,0 +1,7 @@
+[
+  {"id": "a1b2c3", "text": "FP&A Analyst", "categories": {"location": "Remote", "team": "Finance"}, "createdAt": 1795449600000,
+   "hostedUrl": "https://jobs.lever.co/examplestartup/a1b2c3", "applyUrl": "https://jobs.lever.co/examplestartup/a1b2c3/apply",
+   "descriptionPlain": "Build the operating model.", "workplaceType": "remote"},
+  {"id": "d4e5f6", "text": "Account Executive", "categories": {"location": "Chicago, IL"}, "createdAt": 1795449600000,
+   "hostedUrl": "https://jobs.lever.co/examplestartup/d4e5f6", "workplaceType": "onsite"}
+]

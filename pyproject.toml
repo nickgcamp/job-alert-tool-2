@@ -1,0 +1,15 @@
+[project]
+name = "job-alert-tool"
+version = "0.1.0"
+description = "Catch new job postings within the hour, straight from company job boards."
+requires-python = ">=3.10"
+dependencies = ["requests>=2.31", "PyYAML>=6.0"]
+
+[project.optional-dependencies]
+scoring = ["anthropic>=1.0"]
+postgres = ["psycopg[binary]>=3.1"]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

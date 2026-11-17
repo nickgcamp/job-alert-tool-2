@@ -1,0 +1,6 @@
+requests>=2.31
+PyYAML>=6.0
+# Optional: fit scoring with Claude (scoring.enabled: true)
+anthropic>=1.0
+# Optional: Postgres instead of SQLite (set DATABASE_URL)
+# psycopg[binary]>=3.1

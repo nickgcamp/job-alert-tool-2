@@ -1,0 +1,50 @@
+# Companies to watch. One row per job board. Lines starting with # are ignored.
+#
+#   ats:   greenhouse | lever | ashby | workday
+#   board: the board's slug (greenhouse, lever, ashby) or the careers-site URL (workday)
+#
+# Add a company: open one of its job postings, copy the URL, run
+#   python -m job_alert detect <url>
+# and paste the row it prints below.
+#
+# Starter list: Twin Cities employers whose boards were found in public job links (Nov 2026).
+# Not yet tested live. If a board fails on the first run, check its careers page and fix or disable the row.
+name,ats,board,enabled
+
+# Large employers (Workday)
+Target,workday,https://target.wd5.myworkdayjobs.com/targetcareers,true
+General Mills,workday,https://genmills.wd1.myworkdayjobs.com/GMI_External_Careers,true
+U.S. Bank,workday,https://usbank.wd1.myworkdayjobs.com/US_Bank_Careers,true
+3M,workday,https://3m.wd1.myworkdayjobs.com/Search,true
+Medtronic,workday,https://medtronic.wd1.myworkdayjobs.com/MedtronicCareers,true
+Ecolab,workday,https://ecolab.wd1.myworkdayjobs.com/Ecolab_External,true
+Ameriprise Financial,workday,https://ameriprise.wd5.myworkdayjobs.com/Ameriprise,true
+Thrivent,workday,https://thrivent.wd5.myworkdayjobs.com/external,true
+C.H. Robinson,workday,https://chrobinson.wd5.myworkdayjobs.com/CHRobinson,true
+Land O'Lakes,workday,https://landolakes.wd1.myworkdayjobs.com/LandOLakes,true
+Polaris,workday,https://polaris.wd5.myworkdayjobs.com/PolarisJobs,true
+Securian Financial,workday,https://hq.wd12.myworkdayjobs.com/Securian_External,true
+Xcel Energy,workday,https://xcelenergy.wd1.myworkdayjobs.com/External,true
+Graco,workday,https://graco.wd501.myworkdayjobs.com/Graco_Careers,true
+Donaldson,workday,https://donaldson.wd115.myworkdayjobs.com/DonaldsonCareers,true
+Toro,workday,https://ttc.wd1.myworkdayjobs.com/Toro_External_Careers,true
+Pentair,workday,https://pentair.wd5.myworkdayjobs.com/Pentair_Careers,true
+Patterson Companies,workday,https://pattersoncompanies.wd501.myworkdayjobs.com/PDCO,true
+Piper Sandler,workday,https://pipersandler.wd501.myworkdayjobs.com/Piper_Sandler_Careers,true
+Deluxe,workday,https://deluxe.wd5.myworkdayjobs.com/USA_CAN,true
+Sleep Number,workday,https://sleepnumber.wd5.myworkdayjobs.com/sleepnumber,true
+Allina Health,workday,https://allina.wd5.myworkdayjobs.com/External,true
+Arctic Wolf,workday,https://arcticwolf.wd1.myworkdayjobs.com/External,true
+
+# Tech and fintech
+Jamf,greenhouse,jamf,true
+Sezzle,greenhouse,sezzle,true
+# "branch" looked like the Branch payments app's board but the page didn't name Minneapolis. Check before relying on it.
+Branch,greenhouse,branch,true
+Field Nation,lever,fieldnation,true
+
+# Not supported yet (their boards run on other systems):
+#   Best Buy, UnitedHealth Group / Optum (Taleo), Cargill and Boston Scientific (SuccessFactors),
+#   Andersen (Taleo), SPS Commerce (iCIMS), Calabrio (Workable), Dayforce (own system),
+#   Life Time (Phenom), Mortenson (Oracle), Tennant (SuccessFactors), HealthPartners (SmartRecruiters, partial),
+#   Bremer Bank (now Old National, iCIMS)

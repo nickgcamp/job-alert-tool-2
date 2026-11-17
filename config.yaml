@@ -1,0 +1,70 @@
+# What counts as a match. Terms are case-insensitive whole words/phrases.
+
+filters:
+  include_titles:
+    - fp&a
+    - fp & a
+    - financial planning
+    - financial analyst
+    - finance analyst
+    - senior financial analyst
+    - sr financial analyst
+    - sr. financial analyst
+    - business finance analyst
+    - corporate finance analyst
+    - commercial finance analyst
+    - strategic finance
+  exclude_titles:
+    - intern
+    - internship
+    - co-op
+    - director
+    - vice president
+    - vp
+    - chief
+    - head of
+  # A job passes if its location matches any of these, or it's remote and remote_ok is true.
+  locations:
+    - minneapolis
+    - st. paul
+    - st paul
+    - saint paul
+    - minnesota
+    - mn
+    - twin cities
+    - bloomington
+    - eden prairie
+    - minnetonka
+    - plymouth
+    - edina
+    - golden valley
+    - roseville
+    - maple grove
+    - chanhassen
+    - shakopee
+    - eagan
+    - st. louis park
+  exclude_locations:
+    - canada
+    - united kingdom
+    - london
+    - india
+    - philippines
+  remote_ok: true
+  # Skip postings older than this (when the board gives a date). Repeats are blocked by the database either way.
+  max_age_hours: 72
+
+workday:
+  # Workday has no "list all jobs" feed, so each Workday company is searched with these terms.
+  search_terms:
+    - financial analyst
+    - fp&a
+    - financial planning
+  max_pages: 2
+
+scoring:
+  # Needs ANTHROPIC_API_KEY plus RESUME_TEXT (or resume.txt). Leave off until the basics work.
+  enabled: false
+  model: claude-opus-5-5
+  effort: low
+  min_score: 60
