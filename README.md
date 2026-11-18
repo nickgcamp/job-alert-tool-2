@@ -38,7 +38,7 @@ Lever or Ashby. Together these cover a big share of the market.
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements-dev.txt
-pytest -q                                  # 50 tests, no network needed
+pytest -q                                  # 51 tests, no network needed
 
 # 1. Add companies (see "Choosing companies" below)
 python -m job_alert detect "<a job posting URL from the company's careers page>"
@@ -53,6 +53,8 @@ python -m job_alert run --dry-run -v       # preview without saving or sending
 
 The first run is a silent "seed" on purpose, so you don't get 300 alerts for jobs that
 have been up for weeks. Use `--no-seed` if you do want everything that matches today.
+The same goes for any board the first time it answers, whether you just added it or it
+was failing before: its existing postings are stored quietly, and only later ones alert.
 
 ## Choosing companies
 
@@ -152,7 +154,9 @@ tests/           fixtures for each ATS plus filter, store, scorer and pipeline t
 - **One broken board doesn't stop the run.** The scheduled job only fails if every board
   fails, which is the signal that something real broke.
 - **Polite by default:** one request per board per hour (a few more for Workday), retries
-  with backoff, and an honest User-Agent.
+  with backoff, and an honest User-Agent. Workday seems to rate-limit by IP across all of
+  its customers' sites, so Workday boards are checked one at a time, 2 seconds apart,
+  while the other boards run in parallel.
 - **Fetchers are tested against saved responses**, built from each ATS's documented fields,
   so the test suite runs without network access.
 

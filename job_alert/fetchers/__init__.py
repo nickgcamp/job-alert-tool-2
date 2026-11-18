@@ -27,7 +27,8 @@ USER_AGENT = "job-alert-tool/0.1 (personal job search; low volume)"
 
 def make_session() -> requests.Session:
     session = requests.Session()
-    retry = Retry(total=3, backoff_factor=1.0, status_forcelist=(429, 500, 502, 503, 504), allowed_methods=None)
+    # Waits honor a Retry-After header when the server sends one.
+    retry = Retry(total=4, backoff_factor=3.0, status_forcelist=(429, 500, 502, 503, 504), allowed_methods=None)
     session.mount("https://", HTTPAdapter(max_retries=retry))
     session.headers.update({"User-Agent": USER_AGENT, "Accept": "application/json"})
     return session

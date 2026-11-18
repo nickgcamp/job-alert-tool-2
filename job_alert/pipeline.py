@@ -28,20 +28,43 @@ class RunSummary:
 
 
 def fetch_all(companies: list[Company], settings: Settings, workers: int = 8) -> tuple[list[Job], int]:
+    """Greenhouse, Lever and Ashby boards run in parallel; Workday sites run one at a time
+    (they share a rate limit), alongside the others."""
     session = make_session()
     jobs: list[Job] = []
     failed = 0
-    with ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = {pool.submit(fetch_company, c, session, settings): c for c in companies if c.enabled}
-        for fut in as_completed(futures):
-            company = futures[fut]
+    enabled = [c for c in companies if c.enabled]
+    parallel = [c for c in enabled if c.ats != "workday"]
+    serial = [c for c in enabled if c.ats == "workday"]
+
+    def fetch_serial() -> list[tuple[Company, list[Job] | Exception]]:
+        out = []
+        for c in serial:
             try:
-                got = fut.result()
-                log.info("%-28s %-10s %4d jobs", company.name, company.ats, len(got))
-                jobs.extend(got)
-            except Exception as exc:  # one broken board shouldn't sink the run
-                failed += 1
-                log.error("%s (%s): %s", company.name, company.ats, exc)
+                out.append((c, fetch_company(c, session, settings)))
+            except Exception as exc:
+                out.append((c, exc))
+        return out
+
+    def record(company: Company, result) -> None:
+        nonlocal failed
+        if isinstance(result, Exception):  # one broken board shouldn't sink the run
+            failed += 1
+            log.error("%s (%s): %s", company.name, company.ats, result)
+        else:
+            log.info("%-28s %-10s %4d jobs", company.name, company.ats, len(result))
+            jobs.extend(result)
+
+    with ThreadPoolExecutor(max_workers=workers + 1) as pool:
+        serial_future = pool.submit(fetch_serial)
+        futures = {pool.submit(fetch_company, c, session, settings): c for c in parallel}
+        for fut in as_completed(futures):
+            try:
+                record(futures[fut], fut.result())
+            except Exception as exc:
+                record(futures[fut], exc)
+        for company, result in serial_future.result():
+            record(company, result)
     return jobs, failed
 
 
@@ -57,12 +80,14 @@ def run(
     jobs, summary.failed_companies = fetch_all(companies, settings)
     summary.fetched = len(jobs)
 
+    known_boards = store.known_boards()
     new_jobs = store.unseen(jobs)
     summary.new = len(new_jobs)
 
     # First run: remember everything that's already posted without alerting, so you
     # only hear about jobs that appear from now on.
-    if seed is None:
+    auto_seed = seed is None
+    if auto_seed:
         seed = store.count() == 0
     if seed:
         summary.seeded = True
@@ -71,7 +96,17 @@ def run(
         log.info("Seed run: stored %d existing postings, no alerts sent.", len(new_jobs))
         return summary
 
-    matches = filters.apply_filters(new_jobs, settings.filters)
+    # A board that has never returned jobs before (it failed on earlier runs, or you just added
+    # it) gets seeded silently too, so it doesn't flood you with its whole backlog.
+    # --no-seed turns this off along with the first-run seed.
+    first_time = [j for j in new_jobs if auto_seed and (j.source, j.company.lower()) not in known_boards]
+    if first_time:
+        boards = sorted({j.company for j in first_time})
+        log.info("First successful check of %s: stored %d postings, no alerts.", ", ".join(boards), len(first_time))
+    first_keys = {j.key for j in first_time}
+    candidates = [j for j in new_jobs if j.key not in first_keys]
+
+    matches = filters.apply_filters(candidates, settings.filters)
     summary.matched = len(matches)
 
     if matches and settings.scoring.enabled:

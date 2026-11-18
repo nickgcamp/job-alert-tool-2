@@ -15,6 +15,8 @@ Keep request volume low: a few search terms, a few pages, once an hour.
 from __future__ import annotations
 
 import re
+import threading
+import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlparse
@@ -24,6 +26,26 @@ from job_alert.textutil import html_to_text, parse_iso
 
 PAGE = 20
 _LOCALE = re.compile(r"^[a-z]{2}-[A-Z]{2}$")
+
+# Workday appears to rate-limit by client IP across all its customers' sites, so calls to
+# different companies count together. Space every Workday request out, one at a time.
+MIN_INTERVAL_SECONDS = 2.0
+_lock = threading.Lock()
+_last_call = 0.0
+
+
+def _throttle() -> None:
+    global _last_call
+    with _lock:
+        wait = MIN_INTERVAL_SECONDS - (time.monotonic() - _last_call)
+        if wait > 0:
+            time.sleep(wait)
+        _last_call = time.monotonic()
+
+
+def _headers(site: "WorkdaySite", **extra: str) -> dict:
+    # The same headers the company's own careers page sends with this call.
+    return {"Accept-Language": "en-US", "Origin": f"https://{site.host}", "Referer": f"https://{site.host}/{site.site}", **extra}
 
 
 @dataclass(frozen=True)
@@ -98,9 +120,8 @@ def fetch(company: Company, session, settings) -> list[Job]:
     for term in terms:
         for page in range(settings.workday_max_pages):
             body = {"appliedFacets": {}, "limit": PAGE, "offset": page * PAGE, "searchText": term}
-            resp = session.post(
-                site.api, json=body, headers={"Accept-Language": "en-US", "Content-Type": "application/json"}, timeout=30
-            )
+            _throttle()
+            resp = session.post(site.api, json=body, headers=_headers(site, **{"Content-Type": "application/json"}), timeout=30)
             resp.raise_for_status()
             payload = resp.json()
             batch = parse(company, payload, site)
@@ -118,7 +139,8 @@ def add_description(job: Job, session) -> Job:
     if not job.url.startswith(prefix):
         return job
     detail_url = f"https://{site.host}/wday/cxs/{site.tenant}/{site.site}{job.url[len(prefix):]}"
-    resp = session.get(detail_url, headers={"Accept": "application/json", "Accept-Language": "en-US"}, timeout=30)
+    _throttle()
+    resp = session.get(detail_url, headers=_headers(site, Accept="application/json"), timeout=30)
     resp.raise_for_status()
     data = resp.json()
     info = data.get("jobPostingInfo") or data

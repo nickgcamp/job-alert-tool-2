@@ -51,6 +51,11 @@ class SeenStore:
     def count(self) -> int:
         return self._exec("SELECT COUNT(*) FROM seen_jobs").fetchone()[0]
 
+    def known_boards(self) -> set[tuple[str, str]]:
+        """(source, company) pairs that have returned at least one job before."""
+        rows = self._exec("SELECT DISTINCT source, company FROM seen_jobs").fetchall()
+        return {(source, company.lower()) for source, company in rows}
+
     def unseen(self, jobs: list[Job]) -> list[Job]:
         """Jobs whose key isn't stored yet, in their original order, without duplicates."""
         out, keys = [], set()
